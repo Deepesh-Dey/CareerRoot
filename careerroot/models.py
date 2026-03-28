@@ -123,6 +123,9 @@ class PlacementDrive(db.Model):
     job_title = db.Column(db.String(150), nullable=False)
     job_description = db.Column(db.Text, nullable=True)
     eligibility_criteria = db.Column(db.Text, nullable=True)
+    skills_required = db.Column(db.Text, nullable=True)  #comma separated skills
+    experience_required = db.Column(db.String(100), nullable=True)  #e.g., 0-2 years
+    salary_range = db.Column(db.String(100), nullable=True)  #e.g., 5-8 LPA
     application_deadline = db.Column(db.DateTime, nullable=False)
     status = db.Column(
         db.String(20),

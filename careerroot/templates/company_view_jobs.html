@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="margin-top:30px; margin-bottom:30px;">
+    <div style="background-color:lightblue; padding:20px; border:2px solid darkblue; border-radius:5px;">
+        <h2 style="color:darkblue; margin-bottom:20px;">My Job Postings</h2>
+        
+        <a href="{{ url_for('company_post_job') }}" style="background-color:blue; color:white; padding:10px 15px; border:none; border-radius:3px; text-decoration:none; font-weight:bold; margin-bottom:20px; display:inline-block;">
+            Post New Job
+        </a>
+        
+        {% if drives %}
+            <table style="width:100%; border-collapse:collapse; background-color:white; margin-top:20px;">
+                <thead>
+                    <tr style="background-color:darkblue; color:white;">
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Job Title</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Status</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Applications</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Deadline</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                        <tr style="border-bottom:1px solid lightgray;">
+                            <td style="padding:10px; border:1px solid lightgray;">{{ drive.job_title }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">
+                                {% if drive.status == 'Pending' %}
+                                    <span style="background-color:#FFC107; color:black; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                                {% elif drive.status == 'Approved' %}
+                                    <span style="background-color:green; color:white; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                                {% elif drive.status == 'Closed' %}
+                                    <span style="background-color:red; color:white; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ drive.applications|length }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ drive.application_deadline.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td style="padding:10px; border:1px solid lightgray; text-align:center;">
+                                <a href="{{ url_for('company_edit_job', drive_id=drive.drive_id) }}" style="background-color:blue; color:white; padding:5px 10px; border-radius:3px; text-decoration:none; font-size:12px;">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="background-color:white; padding:20px; border:1px solid lightgray; border-radius:3px; text-align:center;">
+                <p>No jobs posted yet. <a href="{{ url_for('company_post_job') }}" style="color:blue; text-decoration:underline;">Post a new job</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

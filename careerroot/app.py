@@ -544,6 +544,224 @@ def blacklist_company(company_id):
     return redirect(url_for('admin_blacklist'))
 
 
+#company job management routes
+
+@app.route('/company/post-job', methods=['GET', 'POST'])
+def company_post_job():
+    # company post new job
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    company = Company.query.get(company_id)
+    
+    # check if company is approved
+    if company.approval_status != 'Approved':
+        flash('Only approved companies can post jobs', 'danger')
+        return redirect(url_for('company_dashboard'))
+    
+    if request.method == 'POST':
+        job_title = request.form.get('job_title')
+        job_description = request.form.get('job_description')
+        eligibility_criteria = request.form.get('eligibility_criteria')
+        skills_required = request.form.get('skills_required')
+        experience_required = request.form.get('experience_required')
+        salary_range = request.form.get('salary_range')
+        application_deadline = request.form.get('application_deadline')
+        
+        try:
+            # create new placement drive
+            drive = PlacementDrive(
+                company_id=company_id,
+                job_title=job_title,
+                job_description=job_description,
+                eligibility_criteria=eligibility_criteria,
+                skills_required=skills_required,
+                experience_required=experience_required,
+                salary_range=salary_range,
+                application_deadline=application_deadline,
+                status=DriveStatus.PENDING.value
+            )
+            db.session.add(drive)
+            db.session.commit()
+            flash('Job posted successfully! Waiting for admin approval.', 'success')
+            return redirect(url_for('company_jobs'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error posting job: {str(e)}', 'danger')
+    
+    return render_template('company_post_job.html', company=company)
+
+
+@app.route('/company/jobs')
+def company_jobs():
+    # view all jobs posted by company
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    company = Company.query.get(company_id)
+    
+    # get all drives posted by this company
+    drives = PlacementDrive.query.filter_by(company_id=company_id).all()
+    
+    return render_template('company_view_jobs.html', company=company, drives=drives)
+
+
+@app.route('/company/job/<int:drive_id>/edit', methods=['GET', 'POST'])
+def company_edit_job(drive_id):
+    # edit job posting status (active/closed)
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    drive = PlacementDrive.query.get(drive_id)
+    
+    if not drive or drive.company_id != company_id:
+        flash('Job not found', 'danger')
+        return redirect(url_for('company_jobs'))
+    
+    if request.method == 'POST':
+        new_status = request.form.get('status')
+        
+        if new_status in ['Approved', 'Closed']:
+            drive.status = new_status
+            db.session.commit()
+            flash(f'Job status updated to {new_status}.', 'success')
+        else:
+            flash('Invalid status', 'danger')
+        
+        return redirect(url_for('company_jobs'))
+    
+    return render_template('company_edit_job.html', drive=drive)
+
+
+@app.route('/company/applications')
+def company_applications():
+    # view all applications for jobs posted by company
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    company = Company.query.get(company_id)
+    
+    # get all applications for this company's drives
+    applications = db.session.query(Application).join(
+        PlacementDrive, Application.drive_id == PlacementDrive.drive_id
+    ).filter(PlacementDrive.company_id == company_id).all()
+    
+    return render_template('company_view_applications.html', company=company, applications=applications)
+
+
+@app.route('/company/application/<int:application_id>/shortlist', methods=['POST'])
+def company_shortlist_application(application_id):
+    # shortlist a student for a job
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    application = Application.query.get(application_id)
+    
+    if not application:
+        flash('Application not found', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # verify company owns this drive
+    drive = PlacementDrive.query.get(application.drive_id)
+    if drive.company_id != company_id:
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # update status
+    application.status = ApplicationStatus.SHORTLISTED.value
+    db.session.commit()
+    
+    flash('Student shortlisted successfully!', 'success')
+    return redirect(url_for('company_applications'))
+
+
+@app.route('/company/application/<int:application_id>/select', methods=['POST'])
+def company_select_application(application_id):
+    # select a student for final placement
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    application = Application.query.get(application_id)
+    
+    if not application:
+        flash('Application not found', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # verify company owns this drive
+    drive = PlacementDrive.query.get(application.drive_id)
+    if drive.company_id != company_id:
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # update status
+    application.status = ApplicationStatus.SELECTED.value
+    db.session.commit()
+    
+    flash('Student selected successfully!', 'success')
+    return redirect(url_for('company_applications'))
+
+
+@app.route('/company/application/<int:application_id>/reject', methods=['POST'])
+def company_reject_application(application_id):
+    # reject a student application
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    application = Application.query.get(application_id)
+    
+    if not application:
+        flash('Application not found', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # verify company owns this drive
+    drive = PlacementDrive.query.get(application.drive_id)
+    if drive.company_id != company_id:
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    # update status
+    application.status = ApplicationStatus.REJECTED.value
+    db.session.commit()
+    
+    flash('Application rejected.', 'success')
+    return redirect(url_for('company_applications'))
+
+
+@app.route('/company/shortlisted')
+def company_shortlisted():
+    # view shortlisted candidates
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company_id = session.get('user_id')
+    company = Company.query.get(company_id)
+    
+    # get all shortlisted applications for this company's drives
+    applications = db.session.query(Application).join(
+        PlacementDrive, Application.drive_id == PlacementDrive.drive_id
+    ).filter(
+        PlacementDrive.company_id == company_id,
+        Application.status == ApplicationStatus.SHORTLISTED.value
+    ).all()
+    
+    return render_template('company_shortlisted.html', company=company, applications=applications)
+
+
 @app.route('/health')
 def health_check():
     #health check

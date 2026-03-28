@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="margin-top:30px; margin-bottom:30px;">
+    <div style="background-color:lightblue; padding:20px; border:2px solid darkblue; border-radius:5px;">
+        <h2 style="color:darkblue; margin-bottom:20px;">Shortlisted Candidates</h2>
+        
+        <a href="{{ url_for('company_applications') }}" style="background-color:blue; color:white; padding:10px 15px; border:none; border-radius:3px; text-decoration:none; font-weight:bold; margin-bottom:20px; display:inline-block;">
+            Back to All Applications
+        </a>
+        
+        {% if applications %}
+            <div style="margin-top:20px;">
+                {% for application in applications %}
+                    <div style="background-color:white; padding:15px; border:2px solid darkblue; border-radius:5px; margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h4 style="color:darkblue; margin:0 0 10px 0;">{{ application.student.name }}</h4>
+                                <p style="margin:5px 0;"><strong>Email:</strong> {{ application.student.email }}</p>
+                                <p style="margin:5px 0;"><strong>Phone:</strong> {{ application.student.phone }}</p>
+                                <p style="margin:5px 0;"><strong>Department:</strong> {{ application.student.department }}</p>
+                                <p style="margin:5px 0;"><strong>CGPA:</strong> {{ application.student.cgpa }}</p>
+                                <p style="margin:5px 0;"><strong>Job Applied:</strong> <span style="color:blue;">{{ application.drive.job_title }}</span></p>
+                                <p style="margin:5px 0;"><strong>Status:</strong> <span style="background-color:#FFC107; color:black; padding:3px 8px; border-radius:3px;">{{ application.status }}</span></p>
+                            </div>
+                            <div style="text-align:center;">
+                                <form method="POST" style="display:inline;">
+                                    <button formaction="{{ url_for('company_select_application', application_id=application.application_id) }}" type="submit" style="background-color:green; color:white; padding:10px 15px; border:none; border-radius:3px; cursor:pointer; font-weight:bold; display:block; margin-bottom:10px;">
+                                        Select
+                                    </button>
+                                    <button formaction="{{ url_for('company_reject_application', application_id=application.application_id) }}" type="submit" style="background-color:red; color:white; padding:10px 15px; border:none; border-radius:3px; cursor:pointer; font-weight:bold; display:block;">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="background-color:white; padding:20px; border:1px solid lightgray; border-radius:3px; text-align:center;">
+                <p>No shortlisted candidates yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

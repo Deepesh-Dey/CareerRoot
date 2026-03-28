@@ -43,9 +43,10 @@
             <div class="card">
                 <div class="card-body text-center">
                     <h5 class="card-title">Quick Actions</h5>
-                    <button class="btn btn-primary w-100 mb-2">Edit Profile</button>
-                    <button class="btn btn-success w-100 mb-2">Create Drive</button>
-                    <button class="btn btn-info w-100">View Applications</button>
+                    <a href="{{ url_for('company_post_job') }}" class="btn btn-primary w-100 mb-2">Post New Job</a>
+                    <a href="{{ url_for('company_jobs') }}" class="btn btn-success w-100 mb-2">My Job Postings</a>
+                    <a href="{{ url_for('company_applications') }}" class="btn btn-info w-100 mb-2">View Applications</a>
+                    <a href="{{ url_for('company_shortlisted') }}" class="btn btn-warning w-100">Shortlisted Candidates</a>
                 </div>
             </div>
         </div>
@@ -55,10 +56,23 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-secondary text-white">
-                    <h5>Your Placement Drives</h5>
+                    <h5>Dashboard Statistics</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">No drives created yet. <a href="#">Create your first drive</a></p>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h4 class="text-primary">{{ company.drives|length }}</h4>
+                            <p class="text-muted">Jobs Posted</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 class="text-info">{% set app_count = company.drives|map(attribute='applications')|list|sum(attribute='__len__') %}{{ app_count }}</h4>
+                            <p class="text-muted">Total Applications</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 class="text-warning">0</h4>
+                            <p class="text-muted">Shortlisted Candidates</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
