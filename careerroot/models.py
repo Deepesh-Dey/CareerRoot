@@ -41,6 +41,11 @@ class Admin(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    def verify_password(self, password):
+        #check if password is correct
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password, password)
+    
     def __repr__(self):
         return f'<Admin {self.username}>'
 
@@ -68,6 +73,11 @@ class Company(db.Model):
     #relationships
     drives = db.relationship('PlacementDrive', backref='company', lazy=True, cascade='all, delete-orphan')
     
+    def verify_password(self, password):
+        #check if password is correct
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password, password)
+    
     def __repr__(self):
         return f'<Company {self.company_name}>'
 
@@ -92,6 +102,11 @@ class Student(db.Model):
     #Relationships
     applications = db.relationship('Application', backref='student', lazy=True, cascade='all, delete-orphan')
     placements = db.relationship('Placement', backref='student', lazy=True, cascade='all, delete-orphan')
+    
+    def verify_password(self, password):
+        #check if password is correct
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password, password)
     
     def __repr__(self):
         return f'<Student {self.name}>'

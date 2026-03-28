@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - CareerRoot{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">Welcome, {{ student.name }}!</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>My Profile</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Email:</strong> {{ student.email }}</p>
+                            <p><strong>Phone:</strong> {{ student.phone or 'Not provided' }}</p>
+                            <p><strong>Department:</strong> {{ student.department }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>CGPA:</strong> {{ student.cgpa }}</p>
+                            <p><strong>Member Since:</strong> {{ student.created_at.strftime('%d-%m-%Y') }}</p>
+                            <p><strong>Status:</strong> 
+                                {% if student.blacklist_status %}
+                                    <span class="badge bg-danger">Blacklisted</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <button class="btn btn-primary w-100 mb-2">Update Profile</button>
+                    <button class="btn btn-secondary w-100 mb-2">Upload Resume</button>
+                    <button class="btn btn-info w-100">View Applications</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Available Drives</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">No drives available at the moment. Check back soon!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

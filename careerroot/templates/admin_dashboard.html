@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - CareerRoot{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Students</h5>
+                    <h2 class="text-primary">{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Companies</h5>
+                    <h2 class="text-success">{{ total_companies }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Placement Drives</h5>
+                    <h2 class="text-info">{{ total_drives }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Applications</h5>
+                    <h2 class="text-warning">{{ total_applications }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Admin Functions</h5>
+                    <p class="card-text">Use the navigation menu to access admin features:</p>
+                    <ul>
+                        <li>Approve/Reject company registrations</li>
+                        <li>Manage students and companies</li>
+                        <li>View and manage placement drives</li>
+                        <li>View all applications</li>
+                        <li>Blacklist accounts if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
