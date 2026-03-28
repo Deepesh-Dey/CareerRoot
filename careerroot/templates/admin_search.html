@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Admin{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">Search Students and Companies</h1>
+    
+    <!-- search form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="search_type" class="form-label">Search Type</label>
+                        <select class="form-control" id="search_type" name="search_type" required>
+                            <option value="">-- Select --</option>
+                            <option value="student" {% if search_type == 'student' %}selected{% endif %}>Student</option>
+                            <option value="company" {% if search_type == 'company' %}selected{% endif %}>Company</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="search_query" class="form-label">Search Query</label>
+                        <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Type name, email, or contact..." value="{{ search_query or '' }}" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- search results -->
+    {% if search_query and search_type %}
+        <h3 class="mb-4">Search Results for "{{ search_query }}" ({{ search_type|capitalize }})</h3>
+        
+        {% if results %}
+            {% if search_type == 'student' %}
+                <!-- student results -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Department</th>
+                                <th>CGPA</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in results %}
+                                <tr>
+                                    <td>#{{ student.student_id }}</td>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.phone or 'N/A' }}</td>
+                                    <td>{{ student.department }}</td>
+                                    <td>{{ student.cgpa }}</td>
+                                    <td>
+                                        {% if student.blacklist_status %}
+                                            <span class="badge bg-danger">Blacklisted</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            
+            {% elif search_type == 'company' %}
+                <!-- company results -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Company ID</th>
+                                <th>Company Name</th>
+                                <th>Email</th>
+                                <th>HR Contact</th>
+                                <th>Approval Status</th>
+                                <th>Account Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for company in results %}
+                                <tr>
+                                    <td>#{{ company.company_id }}</td>
+                                    <td>{{ company.company_name }}</td>
+                                    <td>{{ company.email }}</td>
+                                    <td>{{ company.hr_contact }}</td>
+                                    <td>{{ company.approval_status }}</td>
+                                    <td>
+                                        {% if company.blacklist_status %}
+                                            <span class="badge bg-danger">Blacklisted</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                <strong>No results found.</strong> Try a different search term.
+            </div>
+        {% endif %}
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

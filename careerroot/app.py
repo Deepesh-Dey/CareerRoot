@@ -283,6 +283,267 @@ def student_dashboard():
     return render_template('student_dashboard.html', student=student)
 
 
+#admin management routes
+
+@app.route('/admin/companies/pending')
+def admin_approve_companies():
+    # show companies waiting for approval
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all pending companies
+    pending_companies = Company.query.filter_by(approval_status='Pending').all()
+    
+    return render_template('admin_approve_companies.html', companies=pending_companies)
+
+
+@app.route('/admin/company/approve/<int:company_id>', methods=['POST'])
+def approve_company(company_id):
+    # approve a company registration
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company = Company.query.get(company_id)
+    if not company:
+        flash('Company not found', 'danger')
+        return redirect(url_for('admin_approve_companies'))
+    
+    # change status to approved
+    company.approval_status = 'Approved'
+    db.session.commit()
+    flash(f'{company.company_name} approved successfully!', 'success')
+    
+    return redirect(url_for('admin_approve_companies'))
+
+
+@app.route('/admin/company/reject/<int:company_id>', methods=['POST'])
+def reject_company(company_id):
+    # reject a company registration
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company = Company.query.get(company_id)
+    if not company:
+        flash('Company not found', 'danger')
+        return redirect(url_for('admin_approve_companies'))
+    
+    # change status to rejected
+    company.approval_status = 'Rejected'
+    db.session.commit()
+    flash(f'{company.company_name} rejected.', 'warning')
+    
+    return redirect(url_for('admin_approve_companies'))
+
+
+@app.route('/admin/drives/pending')
+def admin_approve_drives():
+    # show placement drives waiting for approval
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all pending drives with company info
+    pending_drives = PlacementDrive.query.filter_by(status='Pending').all()
+    
+    return render_template('admin_approve_drives.html', drives=pending_drives)
+
+
+@app.route('/admin/drive/approve/<int:drive_id>', methods=['POST'])
+def approve_drive(drive_id):
+    # approve a placement drive
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get(drive_id)
+    if not drive:
+        flash('Drive not found', 'danger')
+        return redirect(url_for('admin_approve_drives'))
+    
+    # change status to approved
+    drive.status = 'Approved'
+    db.session.commit()
+    flash(f'{drive.job_title} approved successfully!', 'success')
+    
+    return redirect(url_for('admin_approve_drives'))
+
+
+@app.route('/admin/drive/reject/<int:drive_id>', methods=['POST'])
+def reject_drive(drive_id):
+    # reject a placement drive
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get(drive_id)
+    if not drive:
+        flash('Drive not found', 'danger')
+        return redirect(url_for('admin_approve_drives'))
+    
+    # change status back to pending (reject)
+    # note: this is a simple reject, in production you might delete or mark as rejected
+    db.session.delete(drive)
+    db.session.commit()
+    flash(f'{drive.job_title} rejected.', 'warning')
+    
+    return redirect(url_for('admin_approve_drives'))
+
+
+@app.route('/admin/students')
+def admin_view_students():
+    # view all students
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all students
+    all_students = Student.query.all()
+    
+    return render_template('admin_view_students.html', students=all_students)
+
+
+@app.route('/admin/companies')
+def admin_view_companies():
+    # view all companies
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all companies
+    all_companies = Company.query.all()
+    
+    return render_template('admin_view_companies.html', companies=all_companies)
+
+
+@app.route('/admin/drives')
+def admin_view_drives():
+    # view all placement drives
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all drives
+    all_drives = PlacementDrive.query.all()
+    
+    return render_template('admin_view_drives.html', drives=all_drives)
+
+
+@app.route('/admin/applications')
+def admin_view_applications():
+    # view all applications
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all applications with related data
+    all_applications = Application.query.all()
+    
+    return render_template('admin_view_applications.html', applications=all_applications)
+
+
+@app.route('/admin/search', methods=['GET', 'POST'])
+def admin_search():
+    # search for students or companies
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    search_results = []
+    search_type = None
+    search_query = None
+    
+    if request.method == 'POST':
+        search_type = request.form.get('search_type')  
+        search_query = request.form.get('search_query')
+        
+        if search_type == 'student' and search_query:
+            # search students by name, email, or student_id
+            search_results = Student.query.filter(
+                (Student.name.ilike(f'%{search_query}%')) |
+                (Student.email.ilike(f'%{search_query}%')) |
+                (Student.phone.ilike(f'%{search_query}%'))
+            ).all()
+        
+        elif search_type == 'company' and search_query:
+            # search companies by name or email
+            search_results = Company.query.filter(
+                (Company.company_name.ilike(f'%{search_query}%')) |
+                (Company.email.ilike(f'%{search_query}%'))
+            ).all()
+    
+    return render_template('admin_search.html', 
+                         results=search_results, 
+                         search_type=search_type, 
+                         search_query=search_query)
+
+
+@app.route('/admin/blacklist')
+def admin_blacklist():
+    # manage blacklisted users
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    # get all blacklisted students and companies
+    blacklisted_students = Student.query.filter_by(blacklist_status=True).all()
+    blacklisted_companies = Company.query.filter_by(blacklist_status=True).all()
+    
+    return render_template('admin_blacklist.html', 
+                         students=blacklisted_students, 
+                         companies=blacklisted_companies)
+
+
+@app.route('/admin/blacklist/student/<int:student_id>', methods=['POST'])
+def blacklist_student(student_id):
+    # blacklist or unblacklist a student
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student = Student.query.get(student_id)
+    if not student:
+        flash('Student not found', 'danger')
+        return redirect(url_for('admin_blacklist'))
+    
+    # toggle blacklist status
+    student.blacklist_status = not student.blacklist_status
+    db.session.commit()
+    
+    if student.blacklist_status:
+        flash(f'{student.name} has been blacklisted.', 'warning')
+    else:
+        flash(f'{student.name} has been removed from blacklist.', 'success')
+    
+    return redirect(url_for('admin_blacklist'))
+
+
+@app.route('/admin/blacklist/company/<int:company_id>', methods=['POST'])
+def blacklist_company(company_id):
+    # blacklist or unblacklist a company
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    company = Company.query.get(company_id)
+    if not company:
+        flash('Company not found', 'danger')
+        return redirect(url_for('admin_blacklist'))
+    
+    # toggle blacklist status
+    company.blacklist_status = not company.blacklist_status
+    db.session.commit()
+    
+    if company.blacklist_status:
+        flash(f'{company.company_name} has been blacklisted.', 'warning')
+    else:
+        flash(f'{company.company_name} has been removed from blacklist.', 'success')
+    
+    return redirect(url_for('admin_blacklist'))
+
+
 @app.route('/health')
 def health_check():
     #health check

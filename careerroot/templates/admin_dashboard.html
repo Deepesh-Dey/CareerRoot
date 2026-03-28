@@ -45,15 +45,41 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Admin Functions</h5>
-                    <p class="card-text">Use the navigation menu to access admin features:</p>
-                    <ul>
-                        <li>Approve/Reject company registrations</li>
-                        <li>Manage students and companies</li>
-                        <li>View and manage placement drives</li>
-                        <li>View all applications</li>
-                        <li>Blacklist accounts if needed</li>
-                    </ul>
+                    <h5 class="card-title">Admin Management Features</h5>
+                    <p class="card-text mb-3">Click any button below to manage the system:</p>
+                    
+                    <div class="row">
+                        <!-- approvals -->
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_approve_companies') }}" class="btn btn-primary w-100">Approve Companies</a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_approve_drives') }}" class="btn btn-primary w-100">Approve Placement Drives</a>
+                        </div>
+                        
+                        <!-- view records -->
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_view_students') }}" class="btn btn-info w-100">View All Students</a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_view_companies') }}" class="btn btn-info w-100">View All Companies</a>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_view_drives') }}" class="btn btn-info w-100">View All Placement Drives</a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_view_applications') }}" class="btn btn-info w-100">View All Applications</a>
+                        </div>
+                        
+                        <!-- search and blacklist -->
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_search') }}" class="btn btn-warning w-100">Search Students & Companies</a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="{{ url_for('admin_blacklist') }}" class="btn btn-danger w-100">Manage Blacklist</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
