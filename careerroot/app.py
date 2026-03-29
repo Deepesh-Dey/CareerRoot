@@ -545,7 +545,6 @@ def blacklist_company(company_id):
 
 
 #company job management routes
-
 @app.route('/company/post-job', methods=['GET', 'POST'])
 def company_post_job():
     # company post new job

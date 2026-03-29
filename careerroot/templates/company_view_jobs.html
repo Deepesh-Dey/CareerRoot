@@ -26,7 +26,7 @@
                             <td style="padding:10px; border:1px solid lightgray;">{{ drive.job_title }}</td>
                             <td style="padding:10px; border:1px solid lightgray;">
                                 {% if drive.status == 'Pending' %}
-                                    <span style="background-color:#FFC107; color:black; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                                    <span style="background-color:yellow; color:black; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
                                 {% elif drive.status == 'Approved' %}
                                     <span style="background-color:green; color:white; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
                                 {% elif drive.status == 'Closed' %}

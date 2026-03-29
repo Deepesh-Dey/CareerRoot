@@ -31,7 +31,7 @@
                                 {% if application.status == 'Applied' %}
                                     <span style="background-color:blue; color:white; padding:5px 10px; border-radius:3px;">{{ application.status }}</span>
                                 {% elif application.status == 'Shortlisted' %}
-                                    <span style="background-color:#FFC107; color:black; padding:5px 10px; border-radius:3px;">{{ application.status }}</span>
+                                    <span style="background-color:yellow; color:black; padding:5px 10px; border-radius:3px;">{{ application.status }}</span>
                                 {% elif application.status == 'Selected' %}
                                     <span style="background-color:green; color:white; padding:5px 10px; border-radius:3px;">{{ application.status }}</span>
                                 {% elif application.status == 'Rejected' %}
@@ -43,7 +43,7 @@
                                 {% if application.status != 'Rejected' and application.status != 'Selected' %}
                                     <form method="POST" style="display:inline-block;">
                                         {% if application.status == 'Applied' %}
-                                            <button formaction="{{ url_for('company_shortlist_application', application_id=application.application_id) }}" type="submit" style="background-color:#FFC107; color:black; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:12px; margin-right:5px;">
+                                            <button formaction="{{ url_for('company_shortlist_application', application_id=application.application_id) }}" type="submit" style="background-color:yellow; color:black; padding:5px 10px; border:none; border-radius:3px; cursor:pointer; font-size:12px; margin-right:5px;">
                                                 Shortlist
                                             </button>
                                         {% endif %}
