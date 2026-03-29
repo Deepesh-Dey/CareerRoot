@@ -571,7 +571,7 @@ def company_post_job():
         application_deadline = request.form.get('application_deadline')
         
         try:
-            # create new placement drive
+            #create new placement drive
             drive = PlacementDrive(
                 company_id=company_id,
                 job_title=job_title,
@@ -760,6 +760,199 @@ def company_shortlisted():
     ).all()
     
     return render_template('company_shortlisted.html', company=company, applications=applications)
+
+
+#student job management routes
+
+@app.route('/student/profile', methods=['GET', 'POST'])
+def student_profile():
+    # student profile update
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    if request.method == 'POST':
+        # update student profile
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        department = request.form.get('department')
+        cgpa = request.form.get('cgpa')
+        
+        try:
+            student.name = name
+            student.phone = phone
+            student.department = department
+            student.cgpa = float(cgpa) if cgpa else None
+            db.session.commit()
+            
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('student_dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {str(e)}', 'danger')
+    
+    return render_template('student_profile.html', student=student)
+
+
+@app.route('/student/jobs')
+def student_jobs():
+    # search and view approved job postings
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    # get all approved drives from approved companies
+    drives = db.session.query(PlacementDrive).join(
+        Company, PlacementDrive.company_id == Company.company_id
+    ).filter(
+        PlacementDrive.status == 'Approved',
+        Company.approval_status == 'Approved'
+    ).all()
+    
+    return render_template('student_view_jobs.html', student=student, drives=drives)
+
+
+@app.route('/student/jobs/search', methods=['GET', 'POST'])
+def student_search_jobs():
+    # search jobs by company, position, or skills
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    search_query = request.form.get('search_query', '')
+    search_type = request.form.get('search_type', 'position')  # position, company, skills
+    
+    drives = []
+    
+    if search_query:
+        if search_type == 'position':
+            # search by job title
+            drives = db.session.query(PlacementDrive).join(
+                Company, PlacementDrive.company_id == Company.company_id
+            ).filter(
+                PlacementDrive.status == 'Approved',
+                Company.approval_status == 'Approved',
+                PlacementDrive.job_title.ilike(f'%{search_query}%')
+            ).all()
+        
+        elif search_type == 'company':
+            # search by company name
+            drives = db.session.query(PlacementDrive).join(
+                Company, PlacementDrive.company_id == Company.company_id
+            ).filter(
+                PlacementDrive.status == 'Approved',
+                Company.approval_status == 'Approved',
+                Company.company_name.ilike(f'%{search_query}%')
+            ).all()
+        
+        elif search_type == 'skills':
+            # search by skills
+            drives = db.session.query(PlacementDrive).join(
+                Company, PlacementDrive.company_id == Company.company_id
+            ).filter(
+                PlacementDrive.status == 'Approved',
+                Company.approval_status == 'Approved',
+                PlacementDrive.skills_required.ilike(f'%{search_query}%')
+            ).all()
+    
+    return render_template('student_search_jobs.html', student=student, drives=drives, search_query=search_query, search_type=search_type)
+
+
+@app.route('/student/apply/<int:drive_id>', methods=['POST'])
+def student_apply_job(drive_id):
+    # apply for a job
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    # check if student is blacklisted
+    if student.blacklist_status:
+        flash('Your account has been blacklisted', 'danger')
+        return redirect(url_for('student_jobs'))
+    
+    drive = PlacementDrive.query.get(drive_id)
+    if not drive:
+        flash('Job not found', 'danger')
+        return redirect(url_for('student_jobs'))
+    
+    # check if student already applied
+    existing_app = Application.query.filter_by(
+        student_id=student_id,
+        drive_id=drive_id
+    ).first()
+    
+    if existing_app:
+        flash('You have already applied for this job', 'warning')
+        return redirect(url_for('student_jobs'))
+    
+    try:
+        # create application
+        application = Application(
+            student_id=student_id,
+            drive_id=drive_id,
+            status=ApplicationStatus.APPLIED.value
+        )
+        db.session.add(application)
+        db.session.commit()
+        
+        flash('Application submitted successfully!', 'success')
+        return redirect(url_for('student_applications'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error applying for job: {str(e)}', 'danger')
+        return redirect(url_for('student_jobs'))
+
+
+@app.route('/student/applications')
+def student_applications():
+    # view applied jobs and their status
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    # get all applications for this student
+    applications = Application.query.filter_by(student_id=student_id).all()
+    
+    return render_template('student_view_applications.html', student=student, applications=applications)
+
+
+@app.route('/student/job/<int:drive_id>')
+def student_job_details(drive_id):
+    # view job details
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get(drive_id)
+    if not drive:
+        flash('Job not found', 'danger')
+        return redirect(url_for('student_jobs'))
+    
+    company = Company.query.get(drive.company_id)
+    student = Student.query.get(session.get('user_id'))
+    
+    # check if student already applied
+    application = Application.query.filter_by(
+        student_id=student.student_id,
+        drive_id=drive_id
+    ).first()
+    
+    return render_template('student_job_details.html', drive=drive, company=company, student=student, application=application)
 
 
 @app.route('/health')
