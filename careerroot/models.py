@@ -26,6 +26,7 @@ class ApplicationStatus(Enum):
     #Status of student applications
     APPLIED = "Applied"
     SHORTLISTED = "Shortlisted"
+    INTERVIEW = "Interview"
     SELECTED = "Selected"
     REJECTED = "Rejected"
 

@@ -1,8 +1,9 @@
 #CareerRoot - Placement Portal Flask app with authentication
 
 import os
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from models import db, Admin, Company, Student, PlacementDrive, Application, Placement
+from models import db, Admin, Company, Student, PlacementDrive, Application, Placement, ApplicationStatus
 from forms import StudentLoginForm, StudentRegistrationForm, CompanyLoginForm, CompanyRegistrationForm, AdminLoginForm
 from auth import validate_password_strength, hash_password, verify_password
 
@@ -952,6 +953,130 @@ def student_job_details(drive_id):
     ).first()
     
     return render_template('student_job_details.html', drive=drive, company=company, student=student, application=application)
+
+
+# === Milestone 6: Application History and Status Tracking ===
+
+@app.route('/company/application/<int:application_id>/interview', methods=['POST'])
+def company_interview_application(application_id):
+    # mark application for interview
+    if session.get('user_type') != 'company':
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('login'))
+    
+    application = Application.query.get(application_id)
+    if not application:
+        flash('Application not found', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    drive = PlacementDrive.query.get(application.drive_id)
+    if drive.company_id != session.get('user_id'):
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('company_applications'))
+    
+    try:
+        application.status = ApplicationStatus.INTERVIEW.value
+        application.updated_at = datetime.utcnow()
+        db.session.commit()
+        flash('Marked for interview', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error: {str(e)}', 'danger')
+    
+    return redirect(url_for('company_applications'))
+
+
+@app.route('/admin/student/<int:student_id>')
+def admin_view_student(student_id):
+    # admin view student profile and applications
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student = Student.query.get(student_id)
+    if not student:
+        flash('Student not found', 'danger')
+        return redirect(url_for('admin_dashboard'))
+    
+    # get all applications for this student
+    applications = Application.query.filter_by(student_id=student_id).all()
+    
+    return render_template('admin_student_profile.html', student=student, applications=applications)
+
+
+@app.route('/company/student/<int:student_id>')
+def company_view_student(student_id):
+    # company view student profile
+    if session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student = Student.query.get(student_id)
+    if not student:
+        flash('Student not found', 'danger')
+        return redirect(url_for('company_dashboard'))
+    
+    company_id = session.get('user_id')
+    
+    # get applications to this company jobs only
+    applications = db.session.query(Application).join(
+        PlacementDrive, Application.drive_id == PlacementDrive.drive_id
+    ).filter(
+        Application.student_id == student_id,
+        PlacementDrive.company_id == company_id
+    ).all()
+    
+    return render_template('company_student_profile.html', student=student, applications=applications)
+
+
+@app.route('/admin/placements')
+def admin_placements():
+    # view all placements
+    if session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    placements = Placement.query.all()
+    return render_template('admin_placements.html', placements=placements)
+
+
+@app.route('/student/placements')
+def student_placements():
+    # view own placements
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    student_id = session.get('user_id')
+    student = Student.query.get(student_id)
+    
+    # get all placements for this student
+    placements = Placement.query.filter_by(student_id=student_id).all()
+    
+    return render_template('student_placements.html', student=student, placements=placements)
+
+
+@app.route('/student/application/<int:application_id>')
+def student_application_details(application_id):
+    # view application details
+    if session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    
+    application = Application.query.get(application_id)
+    if not application:
+        flash('Application not found', 'danger')
+        return redirect(url_for('student_applications'))
+    
+    # check if it belongs to logged in student
+    if application.student_id != session.get('user_id'):
+        flash('Unauthorized', 'danger')
+        return redirect(url_for('student_applications'))
+    
+    drive = PlacementDrive.query.get(application.drive_id)
+    company = Company.query.get(drive.company_id)
+    
+    return render_template('student_application_details.html', application=application, drive=drive, company=company)
 
 
 @app.route('/health')
