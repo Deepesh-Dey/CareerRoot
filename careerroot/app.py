@@ -3,7 +3,7 @@
 import os
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from models import db, Admin, Company, Student, PlacementDrive, Application, Placement, ApplicationStatus
+from models import db, Admin, Company, Student, PlacementDrive, Application, Placement, ApplicationStatus, DriveStatus
 from forms import StudentLoginForm, StudentRegistrationForm, CompanyLoginForm, CompanyRegistrationForm, AdminLoginForm
 from auth import validate_password_strength, hash_password, verify_password
 
@@ -58,8 +58,8 @@ def init_database():
 
 #routes
 @app.route('/')
-def home():
-    #home page
+def homepage():
+    #home page landing
     if 'user_id' in session:
         user_type = session.get('user_type')
         if user_type == 'admin':
@@ -69,7 +69,34 @@ def home():
         elif user_type == 'student':
             return redirect(url_for('student_dashboard'))
     
-    return redirect(url_for('login'))
+    return render_template('homepage.html')
+
+
+@app.route('/admin/login')
+def admin_login_page():
+    #admin login page
+    if 'user_id' in session and session.get('user_type') == 'admin':
+        return redirect(url_for('admin_dashboard'))
+    
+    return render_template('admin_login_page.html')
+
+
+@app.route('/company/login')
+def company_login_page():
+    #company login and register page
+    if 'user_id' in session and session.get('user_type') == 'company':
+        return redirect(url_for('company_dashboard'))
+    
+    return render_template('company_login_page.html')
+
+
+@app.route('/student/login')
+def student_login_page():
+    #student login and register page
+    if 'user_id' in session and session.get('user_type') == 'student':
+        return redirect(url_for('student_dashboard'))
+    
+    return render_template('student_login_page.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -100,7 +127,7 @@ def login():
             if student:
                 if student.blacklist_status:
                     flash('Your account has been blacklisted', 'danger')
-                    return redirect(url_for('login'))
+                    return redirect(url_for('homepage'))
                 if student.verify_password(password):
                     session['user_id'] = student.student_id
                     session['user_type'] = 'student'
@@ -116,10 +143,10 @@ def login():
             if company:
                 if company.blacklist_status:
                     flash('Your company account has been blacklisted', 'danger')
-                    return redirect(url_for('login'))
+                    return redirect(url_for('homepage'))
                 if company.approval_status != 'Approved':
                     flash(f'Your registration is {company.approval_status}. Please wait for admin approval.', 'warning')
-                    return redirect(url_for('login'))
+                    return redirect(url_for('homepage'))
                 if company.verify_password(password):
                     session['user_id'] = company.company_id
                     session['user_type'] = 'company'
@@ -173,7 +200,7 @@ def student_register():
             db.session.add(student)
             db.session.commit()
             flash('Registration successful! Please login.', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('homepage'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error during registration: {str(e)}', 'danger')
@@ -220,7 +247,7 @@ def company_register():
             db.session.add(company)
             db.session.commit()
             flash('Registration successful! Please wait for admin approval before you can login.', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('homepage'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error during registration: {str(e)}', 'danger')
@@ -235,7 +262,7 @@ def logout():
         username = session.get('username')
         session.clear()
         flash(f'Logged out successfully', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('homepage'))
 
 
 #dashboard routes
@@ -244,7 +271,7 @@ def admin_dashboard():
     #admin dashboard
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     total_students = Student.query.count()
     total_companies = Company.query.count()
@@ -263,7 +290,7 @@ def company_dashboard():
     #company dashboard
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     company = Company.query.get(company_id)
@@ -276,7 +303,7 @@ def student_dashboard():
     #student dashboard
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -291,7 +318,7 @@ def admin_approve_companies():
     # show companies waiting for approval
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all pending companies
     pending_companies = Company.query.filter_by(approval_status='Pending').all()
@@ -304,7 +331,7 @@ def approve_company(company_id):
     # approve a company registration
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company = Company.query.get(company_id)
     if not company:
@@ -324,7 +351,7 @@ def reject_company(company_id):
     # reject a company registration
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company = Company.query.get(company_id)
     if not company:
@@ -344,7 +371,7 @@ def admin_approve_drives():
     # show placement drives waiting for approval
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all pending drives with company info
     pending_drives = PlacementDrive.query.filter_by(status='Pending').all()
@@ -357,7 +384,7 @@ def approve_drive(drive_id):
     # approve a placement drive
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     drive = PlacementDrive.query.get(drive_id)
     if not drive:
@@ -377,7 +404,7 @@ def reject_drive(drive_id):
     # reject a placement drive
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     drive = PlacementDrive.query.get(drive_id)
     if not drive:
@@ -398,7 +425,7 @@ def admin_view_students():
     # view all students
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all students
     all_students = Student.query.all()
@@ -411,7 +438,7 @@ def admin_view_companies():
     # view all companies
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all companies
     all_companies = Company.query.all()
@@ -424,7 +451,7 @@ def admin_view_drives():
     # view all placement drives
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all drives
     all_drives = PlacementDrive.query.all()
@@ -437,7 +464,7 @@ def admin_view_applications():
     # view all applications
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all applications with related data
     all_applications = Application.query.all()
@@ -450,7 +477,7 @@ def admin_search():
     # search for students or companies
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     search_results = []
     search_type = None
@@ -486,7 +513,7 @@ def admin_blacklist():
     # manage blacklisted users
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     # get all blacklisted students and companies
     blacklisted_students = Student.query.filter_by(blacklist_status=True).all()
@@ -502,7 +529,7 @@ def blacklist_student(student_id):
     # blacklist or unblacklist a student
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student = Student.query.get(student_id)
     if not student:
@@ -526,7 +553,7 @@ def blacklist_company(company_id):
     # blacklist or unblacklist a company
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company = Company.query.get(company_id)
     if not company:
@@ -551,7 +578,7 @@ def company_post_job():
     # company post new job
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     company = Company.query.get(company_id)
@@ -571,6 +598,12 @@ def company_post_job():
         application_deadline = request.form.get('application_deadline')
         
         try:
+            #convert application_deadline string to datetime object
+            if application_deadline:
+                deadline_obj = datetime.strptime(application_deadline, '%Y-%m-%dT%H:%M')
+            else:
+                deadline_obj = None
+            
             #create new placement drive
             drive = PlacementDrive(
                 company_id=company_id,
@@ -580,7 +613,7 @@ def company_post_job():
                 skills_required=skills_required,
                 experience_required=experience_required,
                 salary_range=salary_range,
-                application_deadline=application_deadline,
+                application_deadline=deadline_obj,
                 status=DriveStatus.PENDING.value
             )
             db.session.add(drive)
@@ -599,7 +632,7 @@ def company_jobs():
     # view all jobs posted by company
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     company = Company.query.get(company_id)
@@ -615,7 +648,7 @@ def company_edit_job(drive_id):
     # edit job posting status (active/closed)
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     drive = PlacementDrive.query.get(drive_id)
@@ -644,7 +677,7 @@ def company_applications():
     # view all applications for jobs posted by company
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     company = Company.query.get(company_id)
@@ -662,7 +695,7 @@ def company_shortlist_application(application_id):
     # shortlist a student for a job
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     application = Application.query.get(application_id)
@@ -690,7 +723,7 @@ def company_select_application(application_id):
     # select a student for final placement
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     application = Application.query.get(application_id)
@@ -718,7 +751,7 @@ def company_reject_application(application_id):
     # reject a student application
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     application = Application.query.get(application_id)
@@ -746,7 +779,7 @@ def company_shortlisted():
     # view shortlisted candidates
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     company_id = session.get('user_id')
     company = Company.query.get(company_id)
@@ -769,7 +802,7 @@ def student_profile():
     # student profile update
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -802,7 +835,7 @@ def student_jobs():
     # search and view approved job postings
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -823,7 +856,7 @@ def student_search_jobs():
     # search jobs by company, position, or skills
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -872,7 +905,7 @@ def student_apply_job(drive_id):
     # apply for a job
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -920,7 +953,7 @@ def student_applications():
     # view applied jobs and their status
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -936,7 +969,7 @@ def student_job_details(drive_id):
     # view job details
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     drive = PlacementDrive.query.get(drive_id)
     if not drive:
@@ -962,7 +995,7 @@ def company_interview_application(application_id):
     # mark application for interview
     if session.get('user_type') != 'company':
         flash('Unauthorized', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     application = Application.query.get(application_id)
     if not application:
@@ -991,7 +1024,7 @@ def admin_view_student(student_id):
     # admin view student profile and applications
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student = Student.query.get(student_id)
     if not student:
@@ -1009,7 +1042,7 @@ def company_view_student(student_id):
     # company view student profile
     if session.get('user_type') != 'company':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student = Student.query.get(student_id)
     if not student:
@@ -1034,7 +1067,7 @@ def admin_placements():
     # view all placements
     if session.get('user_type') != 'admin':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     placements = Placement.query.all()
     return render_template('admin_placements.html', placements=placements)
@@ -1045,7 +1078,7 @@ def student_placements():
     # view own placements
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
@@ -1061,7 +1094,7 @@ def student_application_details(application_id):
     # view application details
     if session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('homepage'))
     
     application = Application.query.get(application_id)
     if not application:
