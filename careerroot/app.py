@@ -955,7 +955,7 @@ def student_job_details(drive_id):
     return render_template('student_job_details.html', drive=drive, company=company, student=student, application=application)
 
 
-# === Milestone 6: Application History and Status Tracking ===
+#Milestone 6: Application History and Status Tracking
 
 @app.route('/company/application/<int:application_id>/interview', methods=['POST'])
 def company_interview_application(application_id):
