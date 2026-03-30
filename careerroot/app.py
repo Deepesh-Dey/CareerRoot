@@ -127,7 +127,7 @@ def login():
             if student:
                 if student.blacklist_status:
                     flash('Your account has been blacklisted', 'danger')
-                    return redirect(url_for('homepage'))
+                    return render_template('login.html')
                 if student.verify_password(password):
                     session['user_id'] = student.student_id
                     session['user_type'] = 'student'
@@ -143,10 +143,10 @@ def login():
             if company:
                 if company.blacklist_status:
                     flash('Your company account has been blacklisted', 'danger')
-                    return redirect(url_for('homepage'))
+                    return render_template('login.html')
                 if company.approval_status != 'Approved':
                     flash(f'Your registration is {company.approval_status}. Please wait for admin approval.', 'warning')
-                    return redirect(url_for('homepage'))
+                    return render_template('login.html')
                 if company.verify_password(password):
                     session['user_id'] = company.company_id
                     session['user_type'] = 'company'

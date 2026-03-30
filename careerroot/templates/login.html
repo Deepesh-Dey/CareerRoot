@@ -3,6 +3,20 @@
 {% block title %}Login - CareerRoot{% endblock %}
 
 {% block content %}
+<style>
+    .card {
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+    }
+    .card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+</style>
+
 <div class="row justify-content-center mt-5">
     <div class="col-md-12">
         <h2 class="text-center mb-5">CareerRoot - Login Portal</h2>
@@ -69,18 +83,20 @@
                 <h5 class="mb-0">Admin Login</h5>
             </div>
             <div class="card-body">
-                <form method="POST">
-                    <input type="hidden" name="user_type" value="admin">
-                    <div class="mb-3">
-                        <label for="admin_username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="admin_username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="admin_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="admin_password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100">Login</button>
-                </form>
+                <div>
+                    <form method="POST">
+                        <input type="hidden" name="user_type" value="admin">
+                        <div class="mb-3">
+                            <label for="admin_username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="admin_username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="admin_password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">Login</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
