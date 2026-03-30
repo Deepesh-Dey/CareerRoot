@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}View All Placement Drives - Admin{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">All Placement Drives</h1>
+    
+    {% if drives %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Drive ID</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                        <tr>
+                            <td>#{{ drive.drive_id }}</td>
+                            <td>{{ drive.job_title }}</td>
+                            <td>{{ drive.company.company_name }}</td>
+                            <td>{{ drive.application_deadline.strftime('%d-%m-%Y') }}</td>
+                            <td>
+                                {% if drive.status == 'Approved' %}
+                                    <span class="badge bg-success">{{ drive.status }}</span>
+                                {% elif drive.status == 'Pending' %}
+                                    <span class="badge bg-warning">{{ drive.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ drive.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ drive.created_at.strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <strong>No placement drives found.</strong>
+        </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

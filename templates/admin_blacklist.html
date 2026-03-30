@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Blacklist - Admin{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">Manage Blacklisted Users</h1>
+    
+    <!-- blacklisted students -->
+    <div class="mb-5">
+        <h3 class="mb-3">Blacklisted Students</h3>
+        
+        {% if students %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Blacklisted Since</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>#{{ student.student_id }}</td>
+                                <td>{{ student.name }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.department }}</td>
+                                <td>{{ student.updated_at.strftime('%d-%m-%Y') }}</td>
+                                <td>
+                                    <form method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-success btn-sm" formaction="{{ url_for('admin.blacklist_student', student_id=student.student_id) }}">Remove Blacklist</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <strong>No blacklisted students.</strong>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- blacklisted companies -->
+    <div class="mb-5">
+        <h3 class="mb-3">Blacklisted Companies</h3>
+        
+        {% if companies %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Company ID</th>
+                            <th>Company Name</th>
+                            <th>Email</th>
+                            <th>HR Contact</th>
+                            <th>Blacklisted Since</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies %}
+                            <tr>
+                                <td>#{{ company.company_id }}</td>
+                                <td>{{ company.company_name }}</td>
+                                <td>{{ company.email }}</td>
+                                <td>{{ company.hr_contact }}</td>
+                                <td>{{ company.updated_at.strftime('%d-%m-%Y') }}</td>
+                                <td>
+                                    <form method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-success btn-sm" formaction="{{ url_for('admin.blacklist_company', company_id=company.company_id) }}">Remove Blacklist</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <strong>No blacklisted companies.</strong>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

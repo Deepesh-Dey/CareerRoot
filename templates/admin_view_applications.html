@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}View All Applications - Admin{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">All Job Applications</h1>
+    
+    {% if applications %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Application ID</th>
+                        <th>Student Name</th>
+                        <th>Student Email</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Application Status</th>
+                        <th>Applied On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td>#{{ app.application_id }}</td>
+                            <td>{{ app.student.name }}</td>
+                            <td>{{ app.student.email }}</td>
+                            <td>{{ app.drive.job_title }}</td>
+                            <td>{{ app.drive.company.company_name }}</td>
+                            <td>
+                                {% if app.status == 'Selected' %}
+                                    <span class="badge bg-success">{{ app.status }}</span>
+                                {% elif app.status == 'Shortlisted' %}
+                                    <span class="badge bg-info">{{ app.status }}</span>
+                                {% elif app.status == 'Rejected' %}
+                                    <span class="badge bg-danger">{{ app.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ app.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ app.application_date.strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <strong>No applications found.</strong>
+        </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

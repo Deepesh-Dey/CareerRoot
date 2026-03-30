@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="margin-top:30px; margin-bottom:30px;">
+    <div class="row">
+        <div class="col-md-8">
+            <div style="background-color:lightblue; padding:20px; border:2px solid darkblue; border-radius:5px;">
+                <h2 style="color:darkblue; margin-bottom:20px;">Edit Job Posting</h2>
+                
+                <div style="background-color:white; padding:15px; border:1px solid darkblue; border-radius:3px; margin-bottom:20px;">
+                    <p><strong>Job Title:</strong> {{ drive.job_title }}</p>
+                    <p><strong>Current Status:</strong> 
+                        {% if drive.status == 'Pending' %}
+                            <span style="background-color:yellow; color:black; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                        {% elif drive.status == 'Approved' %}
+                            <span style="background-color:green; color:white; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                        {% elif drive.status == 'Closed' %}
+                            <span style="background-color:red; color:white; padding:5px 10px; border-radius:3px;">{{ drive.status }}</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Posted On:</strong> {{ drive.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p><strong>Applications Received:</strong> {{ drive.applications|length }}</p>
+                </div>
+                
+                <form method="POST" style="font-family:Arial; font-size:14px;">
+                    <div style="margin-bottom:15px;">
+                        <label for="status" style="display:block; margin-bottom:5px; font-weight:bold;">Update Status</label>
+                        <select id="status" name="status" required 
+                                style="width:100%; padding:8px; border:1px solid darkblue; border-radius:3px;">
+                            <option value="">-- Select Status --</option>
+                            {% if drive.status != 'Approved' %}
+                                <option value="Approved">Mark as Approved (Active)</option>
+                            {% endif %}
+                            <option value="Closed">Close Job Posting</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-top:20px;">
+                        <button type="submit" style="background-color:blue; color:white; padding:10px 20px; border:none; border-radius:3px; cursor:pointer; font-weight:bold;">
+                            Update Status
+                        </button>
+                        <a href="{{ url_for('company.jobs') }}" style="margin-left:10px; background-color:lightgray; color:black; padding:10px 20px; border:none; border-radius:3px; text-decoration:none; font-weight:bold;">
+                            Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

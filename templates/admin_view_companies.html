@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}View All Companies - Admin{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="mb-4">All Companies</h1>
+    
+    {% if companies %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Company ID</th>
+                        <th>Company Name</th>
+                        <th>Email</th>
+                        <th>HR Contact</th>
+                        <th>Approval Status</th>
+                        <th>Account Status</th>
+                        <th>Joined</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                        <tr>
+                            <td>#{{ company.company_id }}</td>
+                            <td>{{ company.company_name }}</td>
+                            <td>{{ company.email }}</td>
+                            <td>{{ company.hr_contact }}</td>
+                            <td>
+                                {% if company.approval_status == 'Approved' %}
+                                    <span class="badge bg-success">{{ company.approval_status }}</span>
+                                {% elif company.approval_status == 'Pending' %}
+                                    <span class="badge bg-warning">{{ company.approval_status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ company.approval_status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if company.blacklist_status %}
+                                    <span class="badge bg-danger">Blacklisted</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ company.created_at.strftime('%d-%m-%Y') }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.blacklist_company', company_id=company.company_id) }}" style="display:inline;">
+                                    {% if company.blacklist_status %}
+                                        <button type="submit" class="btn btn-sm btn-success">Unblacklist</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-sm btn-danger">Blacklist</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <strong>No companies found.</strong>
+        </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

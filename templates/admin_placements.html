@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="margin-top:30px; margin-bottom:30px;">
+    <div style="background-color:lightblue; padding:20px; border:2px solid darkblue; border-radius:5px;">
+        <a href="{{ url_for('admin.admin_dashboard') }}" style="background-color:lightgray; color:black; padding:10px 15px; border:none; border-radius:3px; text-decoration:none; margin-bottom:20px; display:inline-block;">
+            Back
+        </a>
+        
+        <h2 style="color:darkblue; margin-bottom:20px;">Placement History</h2>
+        
+        {% if placements %}
+            <table style="width:100%; border-collapse:collapse; background-color:white; margin-top:20px;">
+                <thead>
+                    <tr style="background-color:darkblue; color:white;">
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Student</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Company</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Job Title</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Salary (LPA)</th>
+                        <th style="padding:10px; border:1px solid darkblue; text-align:left;">Selected Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for placement in placements %}
+                        <tr style="border-bottom:1px solid lightgray;">
+                            <td style="padding:10px; border:1px solid lightgray;">{{ placement.student.name }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ placement.drive.company.company_name }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ placement.drive.job_title }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ placement.salary or 'N/A' }}</td>
+                            <td style="padding:10px; border:1px solid lightgray;">{{ placement.selected_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="background-color:white; padding:20px; border:1px solid lightgray; border-radius:3px; text-align:center;">
+                <p>No placements yet</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
