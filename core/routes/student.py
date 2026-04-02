@@ -2,6 +2,7 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from core.database import db, Student, Company, PlacementDrive, Application, Placement, ApplicationStatus
+from core.utils.chart_data import get_student_chart_data
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
@@ -20,7 +21,11 @@ def student_dashboard():
     student_id = session.get('user_id')
     student = Student.query.get(student_id)
     
-    return render_template('student_dashboard.html', student=student)
+    # get chart image url for dashboard
+    chart_url = get_student_chart_data(student_id)
+    
+    return render_template('student_dashboard.html', student=student,
+                         chart_url=chart_url)
 
 
 @student_bp.route('/profile', methods=['GET', 'POST'])

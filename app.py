@@ -5,9 +5,11 @@ from core.database import db
 from core.routes import register_routes
 from core import hash_password
 
-app = Flask(__name__)
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/static')
+
 DATABASE_PATH = os.path.join(BASE_DIR, 'careerroot.db')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DATABASE_PATH}'

@@ -4,12 +4,14 @@ from .auth import auth_bp
 from .admin import admin_bp
 from .company import company_bp
 from .student import student_bp
+from .api import api_bp
 
 def register_routes(app):
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(company_bp)
     app.register_blueprint(student_bp)
+    app.register_blueprint(api_bp)
     
     # Utility routes
     @app.route('/health')

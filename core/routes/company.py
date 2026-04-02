@@ -3,6 +3,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from datetime import datetime
 from core.database import db, Company, Student, PlacementDrive, Application, ApplicationStatus
+from core.utils.chart_data import get_company_chart_data
 
 company_bp = Blueprint('company', __name__, url_prefix='/company')
 
@@ -24,7 +25,11 @@ def company_dashboard():
     for drive in company.drives:
         total_applications += len(drive.applications)
     
-    return render_template('company_dashboard.html', company=company, total_applications=total_applications)
+    # get chart image url for dashboard
+    chart_url = get_company_chart_data(company_id)
+    
+    return render_template('company_dashboard.html', company=company, total_applications=total_applications,
+                         chart_url=chart_url)
 
 @company_bp.route('/post-job', methods=['GET', 'POST'])
 def post_job():

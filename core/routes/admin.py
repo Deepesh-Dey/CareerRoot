@@ -2,6 +2,7 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from core.database import db, Admin, Company, Student, PlacementDrive, Application
+from core.utils.chart_data import get_admin_chart_data
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -21,11 +22,15 @@ def admin_dashboard():
     total_drives = PlacementDrive.query.count()
     total_applications = Application.query.count()
     
+    # get chart image url for dashboard
+    chart_url = get_admin_chart_data()
+    
     return render_template('admin_dashboard.html', 
                          total_students=total_students,
                          total_companies=total_companies,
                          total_drives=total_drives,
-                         total_applications=total_applications)
+                         total_applications=total_applications,
+                         chart_url=chart_url)
 
 @admin_bp.route('/companies/pending')
 def approve_companies():
