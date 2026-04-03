@@ -13,35 +13,44 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">Full Name *</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" id="name" name="name" required
+                                   minlength="2" maxlength="50" placeholder="Enter full name"
+                                   title="Name must be 2-50 characters">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Email Address *</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                   placeholder="Enter email" title="Please enter a valid email">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone">
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}"
+                                   placeholder="10 digits" title="Phone must be 10 digits">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="department" class="form-label">Department *</label>
-                            <input type="text" class="form-control" id="department" name="department" required>
+                            <input type="text" class="form-control" id="department" name="department" required
+                                   minlength="2" maxlength="50" placeholder="Enter department"
+                                   title="Department must be 2-50 characters">
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="cgpa" class="form-label">CGPA *</label>
-                        <input type="number" class="form-control" id="cgpa" name="cgpa" step="0.01" required>
+                        <input type="number" class="form-control" id="cgpa" name="cgpa" step="0.01" required
+                               min="0" max="10" placeholder="0-10" title="CGPA must be between 0 and 10">
                     </div>
 
                     <hr>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Password *</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password" required
+                               minlength="8" placeholder="At least 8 chars, 1 uppercase, 1 number, 1 special char"
+                               title="Password must meet strength requirements">
                         <small class="form-text text-muted">
                             Password must: at least 8 characters, 1 uppercase, 1 number, 1 special character
                         </small>
@@ -49,7 +58,8 @@
 
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label">Confirm Password *</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required
+                               minlength="8" placeholder="Re-enter password" title="Password must match">
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>

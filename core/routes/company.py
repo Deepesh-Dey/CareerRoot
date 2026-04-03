@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from datetime import datetime
 from core.database import db, Company, Student, PlacementDrive, Application, ApplicationStatus
 from core.utils.chart_data import get_company_chart_data
+from core.utils.validators import validate_job_title, validate_required_field, sanitize_input
 
 company_bp = Blueprint('company', __name__, url_prefix='/company')
 
@@ -53,12 +54,47 @@ def post_job():
         salary_range = request.form.get('salary_range')
         application_deadline = request.form.get('application_deadline')
         
+        # Validate required fields
+        is_valid, error_msg = validate_required_field(job_title, 'Job Title')
+        if not is_valid:
+            flash(error_msg, 'danger')
+            return render_template('company_post_job.html', company=company)
+        
+        is_valid, error_msg = validate_required_field(job_description, 'Job Description')
+        if not is_valid:
+            flash(error_msg, 'danger')
+            return render_template('company_post_job.html', company=company)
+        
+        is_valid, error_msg = validate_required_field(application_deadline, 'Application Deadline')
+        if not is_valid:
+            flash(error_msg, 'danger')
+            return render_template('company_post_job.html', company=company)
+        
+        # Validate job title format
+        is_valid, error_msg = validate_job_title(job_title)
+        if not is_valid:
+            flash(error_msg, 'danger')
+            return render_template('company_post_job.html', company=company)
+        
         try:
+            # Sanitize input data
+            job_title = sanitize_input(job_title)
+            job_description = sanitize_input(job_description)
+            eligibility_criteria = sanitize_input(eligibility_criteria)
+            skills_required = sanitize_input(skills_required)
+            experience_required = sanitize_input(experience_required)
+            salary_range = sanitize_input(salary_range)
+            
             # convert application_deadline string to datetime object
             if application_deadline:
                 deadline_obj = datetime.strptime(application_deadline, '%Y-%m-%dT%H:%M')
             else:
                 deadline_obj = None
+            
+            # Validate deadline is in future
+            if deadline_obj and deadline_obj <= datetime.now():
+                flash('Application deadline must be in the future', 'danger')
+                return render_template('company_post_job.html', company=company)
             
             # create new placement drive
             from core.database import DriveStatus

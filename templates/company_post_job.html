@@ -9,20 +9,23 @@
                 
                 <form method="POST" style="font-family:Arial; font-size:14px;">
                     <div style="margin-bottom:15px;">
-                        <label for="job_title" style="display:block; margin-bottom:5px; font-weight:bold;">Job Title</label>
-                        <input type="text" id="job_title" name="job_title" required 
+                        <label for="job_title" style="display:block; margin-bottom:5px; font-weight:bold;">Job Title *</label>
+                        <input type="text" id="job_title" name="job_title" required minlength="3" maxlength="100"
+                               placeholder="Enter job title" title="Job title must be 3-100 characters"
                                style="width:100%; padding:8px; border:1px solid darkblue; border-radius:3px;">
                     </div>
                     
                     <div style="margin-bottom:15px;">
-                        <label for="job_description" style="display:block; margin-bottom:5px; font-weight:bold;">Job Description</label>
-                        <textarea id="job_description" name="job_description" rows="4" 
+                        <label for="job_description" style="display:block; margin-bottom:5px; font-weight:bold;">Job Description *</label>
+                        <textarea id="job_description" name="job_description" rows="4" required minlength="10"
+                                  placeholder="Enter detailed job description" title="Description must be at least 10 characters"
                                   style="width:100%; padding:8px; border:1px solid darkblue; border-radius:3px;"></textarea>
                     </div>
                     
                     <div style="margin-bottom:15px;">
                         <label for="eligibility_criteria" style="display:block; margin-bottom:5px; font-weight:bold;">Eligibility Criteria</label>
                         <textarea id="eligibility_criteria" name="eligibility_criteria" rows="3" 
+                                  placeholder="Enter eligibility requirements"
                                   style="width:100%; padding:8px; border:1px solid darkblue; border-radius:3px;"></textarea>
                     </div>
                     
@@ -48,8 +51,9 @@
                     </div>
                     
                     <div style="margin-bottom:15px;">
-                        <label for="application_deadline" style="display:block; margin-bottom:5px; font-weight:bold;">Application Deadline</label>
+                        <label for="application_deadline" style="display:block; margin-bottom:5px; font-weight:bold;">Application Deadline *</label>
                         <input type="datetime-local" id="application_deadline" name="application_deadline" required 
+                               title="Deadline must be in the future"
                                style="width:100%; padding:8px; border:1px solid darkblue; border-radius:3px;">
                     </div>
                     
