@@ -4,97 +4,193 @@
 
 {% block content %}
 <style>
+    /* Card styling with responsive height */
     .card {
-        min-height: 400px;
+        min-height: 380px;
         display: flex;
         flex-direction: column;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0;
+        font-weight: bold;
+    }
+    .card-header h5 {
+        margin: 0;
     }
     .card-body {
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        padding: 25px;
+    }
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1f2937;
+    }
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid lightgray;
+    }
+    .form-control:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+    }
+    .btn {
+        border-radius: 6px;
+        font-weight: bold;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .btn-student {
+        background-color: mediumseagreen;
+        border-color: mediumseagreen;
+        color: white;
+    }
+    .btn-student:hover {
+        background-color: seagreen;
+        border-color: seagreen;
+        color: white;
+    }
+    .btn-company {
+        background-color: lightseagreen;
+        border-color: lightseagreen;
+        color: white;
+    }
+    .btn-company:hover {
+        background-color: darkcyan;
+        border-color: darkcyan;
+        color: white;
+    }
+    .btn-admin {
+        background-color: indigo;
+        border-color: indigo;
+        color: white;
+    }
+    .btn-admin:hover {
+        background-color: blueviolet;
+        border-color: blueviolet;
+        color: white;
+    }
+    .register-link {
+        text-align: center;
+        margin-top: auto;
+    }
+    .register-link a {
+        color: indigo;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+    /* Responsive title */
+    .login-title {
+        font-size: clamp(24px, 6vw, 36px);
+        font-weight: bold;
+        color: darkslategray;
+        margin-bottom: 40px;
+        text-align: center;
     }
 </style>
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-12">
-        <h2 class="text-center mb-5">CareerRoot - Login Portal</h2>
-    </div>
-</div>
-
-<div class="row mb-5">
-    <!--student login-->
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Student Login</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <input type="hidden" name="user_type" value="student">
-                    <div class="mb-3">
-                        <label for="student_email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="student_email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="student_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="student_password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                </form>
-                <div class="mt-3 text-center">
-                    <small>New student? <a href="{{ url_for('auth.student_register') }}">Register here</a></small>
-                </div>
-            </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h2 class="login-title">CareerRoot - Login Portal</h2>
         </div>
     </div>
 
-    <!--company login-->
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Company Login</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <input type="hidden" name="user_type" value="company">
-                    <div class="mb-3">
-                        <label for="company_email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="company_email" name="email" required>
+    <div class="row g-4 mb-5">
+        <!-- Student Login Card -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>Student Login</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="user_type" value="student">
+                        <div class="mb-3">
+                            <label for="student_email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="student_email" name="email" required 
+                                   placeholder="Enter your email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="student_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="student_password" name="password" required
+                                   placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn btn-student w-100">Login</button>
+                    </form>
+                    <div class="register-link">
+                        <small>New student? <a href="{{ url_for('auth.student_register') }}">Register here</a></small>
                     </div>
-                    <div class="mb-3">
-                        <label for="company_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="company_password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Login</button>
-                </form>
-                <div class="mt-3 text-center">
-                    <small>New company? <a href="{{ url_for('auth.company_register') }}">Register here</a></small>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!--admin login-->
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-danger text-white">
-                <h5 class="mb-0">Admin Login</h5>
+        <!-- Company Login Card -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>Company Login</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="user_type" value="company">
+                        <div class="mb-3">
+                            <label for="company_email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="company_email" name="email" required
+                                   placeholder="Enter your email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="company_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="company_password" name="password" required
+                                   placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn btn-company w-100">Login</button>
+                    </form>
+                    <div class="register-link">
+                        <small>New company? <a href="{{ url_for('auth.company_register') }}">Register here</a></small>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div>
+        </div>
+
+        <!-- Admin Login Card -->
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>Admin Login</h5>
+                </div>
+                <div class="card-body">
                     <form method="POST">
                         <input type="hidden" name="user_type" value="admin">
                         <div class="mb-3">
                             <label for="admin_username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="admin_username" name="username" required>
+                            <input type="text" class="form-control" id="admin_username" name="username" required
+                                   placeholder="Enter your username">
                         </div>
                         <div class="mb-3">
                             <label for="admin_password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="admin_password" name="password" required>
+                            <input type="password" class="form-control" id="admin_password" name="password" required
+                                   placeholder="Enter your password">
                         </div>
-                        <button type="submit" class="btn btn-danger w-100">Login</button>
+                        <button type="submit" class="btn btn-admin w-100">Login</button>
                     </form>
                 </div>
             </div>

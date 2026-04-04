@@ -1,221 +1,214 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Login & Register - CareerRoot</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        /* Responsive background */
         body {
-            background-color: white ;
+            background: linear-gradient(135deg, lightseagreen, darkcyan);
+            min-height: 100vh;
             padding: 20px;
         }
+        /* Navbar styling */
         .navbar-custom {
-            background-color: grey;
+            background: linear-gradient(135deg, lightseagreen, darkcyan);
             padding: 15px 20px;
             margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
         .navbar-custom a {
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-decoration: none;
         }
-        .container {
-            max-width: 1000px;
-            margin-top: 30px;
+        .navbar-custom a:hover {
+            opacity: 0.9;
         }
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: none;
-        }
-        .nav-tabs .nav-link {
-            padding: 10px 20px;
-            font-weight: bold;
-            border: 2px solid lightgray;
-            background-color: white;
-            cursor: pointer;
-            border-radius: 5px 5px 0 0;
-            color: darkblue;
-            text-decoration: none;
-        }
-        .nav-tabs .nav-link.active {
-            background-color: skyblue;
-            color: white;
-            border-color: skyblue;
-        }
+        /* Card styling */
         .card {
             background-color: white;
-            padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid skyblue;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-left: 5px solid lightseagreen;
         }
         .card h3 {
-            color: skyblue;
-            margin-bottom: 20px;
-        }
-        .form-group {
+            color: lightseagreen;
             margin-bottom: 15px;
-        }
-        .form-group label {
             font-weight: bold;
-            color: darkblue;
         }
-        .form-group input {
-            border: 1px solid lightgray;
-            padding: 10px;
-            border-radius: 5px;
-            width: 100%;
+        /* Tab styling */
+        .nav-tabs .nav-link {
+            color: darkcyan;
+            border-bottom: 2px solid lightgray;
+            font-weight: 500;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        .nav-tabs .nav-link.active {
+            color: white;
+            background-color: lightseagreen;
+            border-color: #0891b2;
         }
-        .button-group button, .button-group a {
-            flex: 1;
-            padding: 10px;
+        /* Form styling */
+        .form-label {
             font-weight: bold;
+            color: darkslategray;
+        }
+        .form-control:focus {
+            border-color: lightseagreen;
+            box-shadow: 0 0 0 0.2rem rgba(8, 145, 178, 0.25);
+        }        /* Reduce form spacing */
+        .form-group-compact {
+            margin-bottom: 6px;
+        }        /* Button styling */
+        .btn-submit {
+            background: linear-gradient(135deg, lightseagreen, darkcyan);
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-        }
-        .submit-btn {
-            background-color: skyblue;
+            padding: 10px 20px;
+            font-weight: bold;
             color: white;
         }
-        .back-btn {
-            background-color: lightgray;
-            color: black;
+        .btn-submit:hover {
+            background: linear-gradient(135deg, darkcyan, darkslategray);
+            border: none;
+            color: white;
         }
-        .back-btn:hover {
-            background-color: gray;
-        }
-        .alerts {
-            margin-bottom: 20px;
-        }
+        /* Tab pane styling - remove fade delay */
         .tab-pane {
+            margin: 0;
+            padding: 0;
             display: none;
         }
-        .tab-pane.active {
+        .tab-pane.show {
             display: block;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .card {
+                padding: 20px;
+            }
+            .card h3 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- navigation -->
+    <!-- Navigation -->
     <div class="navbar-custom">
         <a href="{{ url_for('auth.homepage') }}">← Back to Home</a>
     </div>
 
+    <!-- Main container -->
     <div class="container">
-        <!-- messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alerts">
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'danger' if category == 'danger' else 'warning' if category == 'warning' else 'success' }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                <!-- Alert messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'danger' else 'warning' if category == 'warning' else 'success' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Tabs -->
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#login" role="tab">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#register" role="tab">Register</a>
+                    </li>
+                </ul>
+
+                <!-- Login Tab -->
+                <div id="login" class="tab-pane fade show active">
+                    <div class="card">
+                        <h3>Company Login</h3>
+                        <form method="POST" action="{{ url_for('auth.login') }}">
+                            <div class="mb-3">
+                                <label for="login_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="login_email" name="email" required 
+                                       placeholder="Enter your email" title="Please enter a valid email address">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="login_password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="login_password" name="password" required minlength="8" 
+                                       placeholder="Enter your password" title="Password must be at least 8 characters">
+                            </div>
+
+                            <input type="hidden" name="user_type" value="company">
+
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="submit" class="btn btn-submit flex-sm-grow-1">Login</button>
+                                <a href="{{ url_for('auth.homepage') }}" class="btn btn-light flex-sm-grow-1">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            {% endif %}
-        {% endwith %}
 
-        <!-- tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#login" role="tab">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#register" role="tab">Register</a>
-            </li>
-        </ul>
+                <!-- Register Tab -->
+                <div id="register" class="tab-pane fade">
+                    <div class="card">
+                        <h3>Register Your Company</h3>
+                        <form method="POST" action="{{ url_for('auth.company_register') }}">
+                            <div class="form-group-compact">
+                                <label for="company_name" class="form-label">Company Name *</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name" required minlength="2" maxlength="100"
+                                       placeholder="Enter company name" title="Company name must be 2-100 characters">
+                            </div>
 
-        <!-- login tab -->
-        <div id="login" class="tab-pane active">
-            <div class="card">
-                <h3>Company Login</h3>
+                            <div class="form-group-compact">
+                                <label for="reg_email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="reg_email" name="email" required 
+                                       placeholder="Enter email" title="Please enter a valid email address">
+                            </div>
 
-                <form method="POST" action="{{ url_for('auth.login') }}">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" required placeholder="Enter your email"
-                               title="Please enter a valid email address">
+                            <div class="form-group-compact">
+                                <label for="hr_contact" class="form-label">HR Contact *</label>
+                                <input type="text" class="form-control" id="hr_contact" name="hr_contact" required minlength="2" maxlength="50"
+                                       placeholder="Enter HR contact name" title="HR contact must be 2-50 characters">
+                            </div>
+
+                            <div class="form-group-compact">
+                                <label for="website" class="form-label">Website</label>
+                                <input type="url" class="form-control" id="website" name="website" 
+                                       placeholder="https://example.com" title="Enter valid URL starting with http:// or https://">
+                            </div>
+
+                            <div class="form-group-compact">
+                                <label for="reg_password" class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="reg_password" name="password" required minlength="8" 
+                                       placeholder="At least 8 chars, 1 uppercase, 1 number, 1 special char"
+                                       title="Password must meet strength requirements">
+                            </div>
+
+                            <div class="form-group-compact">
+                                <label for="reg_confirm" class="form-label">Confirm Password *</label>
+                                <input type="password" class="form-control" id="reg_confirm" name="confirm_password" required minlength="8"
+                                       placeholder="Re-enter password" title="Password must match">
+                            </div>
+
+                            <div class="d-grid gap-2 d-sm-flex">
+                                <button type="submit" class="btn btn-submit flex-sm-grow-1">Register</button>
+                                <a href="{{ url_for('auth.homepage') }}" class="btn btn-light flex-sm-grow-1">Cancel</a>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" name="password" required minlength="8" 
-                               placeholder="Enter your password" title="Password must be at least 8 characters">
-                    </div>
-
-                    <input type="hidden" name="user_type" value="company">
-
-                    <div class="button-group">
-                        <button type="submit" class="submit-btn">Login</button>
-                        <a href="{{ url_for('auth.homepage') }}" class="back-btn">Cancel</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- register tab -->
-        <div id="register" class="tab-pane">
-            <div class="card">
-                <h3>Register Your Company</h3>
-
-                <form method="POST" action="{{ url_for('auth.company_register') }}">
-                    <div class="form-group">
-                        <label>Company Name *</label>
-                        <input type="text" name="company_name" required minlength="2" maxlength="100"
-                               placeholder="Enter company name" title="Company name must be 2-100 characters">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" name="email" required placeholder="Enter email"
-                               title="Please enter a valid email address">
-                    </div>
-
-                    <div class="form-group">
-                        <label>HR Contact *</label>
-                        <input type="text" name="hr_contact" required minlength="2" maxlength="50"
-                               placeholder="Enter HR contact name" title="HR contact must be 2-50 characters">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Website</label>
-                        <input type="url" name="website" placeholder="https://example.com"
-                               title="Enter valid URL starting with http:// or https://">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password *</label>
-                        <input type="password" name="password" required minlength="8" 
-                               placeholder="At least 8 chars, 1 uppercase, 1 number, 1 special char"
-                               title="Password must meet strength requirements">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Confirm Password *</label>
-                        <input type="password" name="confirm_password" required minlength="8"
-                               placeholder="Re-enter password" title="Password must match">
-                    </div>
-
-                    <div class="button-group">
-                        <button type="submit" class="submit-btn">Register</button>
-                        <a href="{{ url_for('auth.homepage') }}" class="back-btn">Cancel</a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS for tab functionality -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

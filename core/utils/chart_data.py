@@ -36,8 +36,8 @@ def generate_pie_chart(labels, data, title, filename):
     colors = ['#4F46E5', '#6366F1', '#7C3AED', '#9333EA', '#A855F7', '#C084FC'][:len(filtered_labels)]
     
     # create figure and pie chart
-    fig, ax = plt.subplots(figsize=(8, 6), facecolor='white')
-    ax.pie(filtered_data, labels=filtered_labels, colors=colors, autopct='%1.1f%%', startangle=90, textprops={'fontsize': 11})
+    fig, ax = plt.subplots(figsize=(6, 4), facecolor='white')
+    ax.pie(filtered_data, labels=filtered_labels, colors=colors, autopct='%1.1f%%', startangle=90, textprops={'fontsize': 10})
     ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
     
     # save chart

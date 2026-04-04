@@ -1,37 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareerRoot - Placement Portal</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
+        /* Body and general styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: white;
         }
+        /* Navbar styling */
         .navbar-custom {
-            background-color: darkgray;
+            background: linear-gradient(135deg, indigo, darkviolet);
             padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .navbar-custom a {
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             text-decoration: none;
         }
+        .navbar-custom a:hover {
+            opacity: 0.9;
+        }
+        /* Hero section - responsive */
         .hero-section {
-            background: linear-gradient(135deg, violet 0%, indigo 100%);
+            background: linear-gradient(135deg, darkviolet, purple);
             color: white;
-            padding: 80px 20px;
+            padding: 60px 20px;
             text-align: center;
-            margin-bottom: 50px;
         }
         .hero-section h1 {
-            font-size: 48px;
+            font-size: clamp(32px, 8vw, 48px);
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .hero-section .subheading {
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
             margin-bottom: 20px;
             font-weight: 500;
         }
@@ -40,75 +48,112 @@
             margin-bottom: 30px;
             line-height: 1.6;
         }
+        /* Role buttons - responsive grid */
         .role-buttons {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-bottom: 50px;
         }
         .role-btn {
-            padding: 12px 30px;
+            padding: 12px 25px;
             font-size: 16px;
             font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             text-decoration: none;
             color: white;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
         .role-btn:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .admin-btn {
-            background-color: blue;
+            background: linear-gradient(135deg, darkviolet, blueviolet);
+        }
+        .admin-btn:hover {
+            background: linear-gradient(135deg, blueviolet, darkviolet);
         }
         .company-btn {
-            background-color: skyblue;
+            background-color: lightseagreen;
+        }
+        .company-btn:hover {
+            background-color: darkcyan;
         }
         .student-btn {
-            background-color: greenyellow;
+            background: linear-gradient(135deg, mediumseagreen, seagreen);
         }
+        .student-btn:hover {
+            background: linear-gradient(135deg, seagreen, mediumseagreen);
+        }
+        /* Features section - responsive grid */
         .features-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 50px 20px;
         }
         .feature-card {
             background-color: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
+            transition: transform 0.3s ease;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
         }
         .feature-icon {
             font-size: 50px;
             margin-bottom: 15px;
         }
         .feature-card h3 {
-            color: darkblue;
-            margin-bottom: 10px;
+            color: indigo;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
+        .feature-card p {
+            color: dimgray;
+            line-height: 1.6;
+        }
+        /* Footer styling */
         .footer {
-            background-color: darkgray;
+            background: linear-gradient(135deg, purple, darkviolet);
             color: white;
             text-align: center;
-            padding: 20px;
+            padding: 25px 20px;
             margin-top: 50px;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 15px;
+            }
+            .role-buttons {
+                gap: 10px;
+            }
+            .role-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            .features-section {
+                padding: 30px 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- navigation bar -->
+    <!-- Navigation bar -->
     <div class="navbar-custom">
-        <a href="{{ url_for('auth.homepage') }}">Career-Root</a>
+        <a href="{{ url_for('auth.homepage') }}">CareerRoot</a>
     </div>
 
-    <!-- hero section -->
+    <!-- Hero section -->
     <div class="hero-section">
         <h1>WELCOME TO CAREERROOT</h1>
         <div class="subheading">Launch Your Career with Confidence</div>
@@ -118,7 +163,7 @@
             One platform for students, recruiters, and success.
         </div>
 
-        <!-- role buttons -->
+        <!-- Role buttons -->
         <div class="role-buttons">
             <a href="{{ url_for('auth.admin_login_page') }}" class="role-btn admin-btn">For Admin</a>
             <a href="{{ url_for('auth.company_login_page') }}" class="role-btn company-btn">For Companies</a>
@@ -126,30 +171,42 @@
         </div>
     </div>
 
-    <!-- features section -->
-    <div class="features-section">
-        <div class="feature-card">
-            <div class="feature-icon">👤</div>
-            <h3>For Admin</h3>
-            <p>manage companies, students, and placement drives. approve registrations and monitor all activities across the platform.</p>
-        </div>
+    <!-- Features section with Bootstrap grid -->
+    <div class="container-fluid">
+        <div class="features-section">
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">👤</div>
+                        <h3>For Admin</h3>
+                        <p>Manage companies, students, and placement drives. Approve registrations and monitor all activities across the platform.</p>
+                    </div>
+                </div>
 
-        <div class="feature-card">
-            <div class="feature-icon">🏢</div>
-            <h3>For Companies</h3>
-            <p>create placement drives, view applications, and recruit talented students for your organization with ease.</p>
-        </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🏢</div>
+                        <h3>For Companies</h3>
+                        <p>Create placement drives, view applications, and recruit talented students for your organization with ease.</p>
+                    </div>
+                </div>
 
-        <div class="feature-card">
-            <div class="feature-icon">🎓</div>
-            <h3>For Students</h3>
-            <p>apply for placement drives, track your applications, and land your dream job all in one place.</p>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎓</div>
+                        <h3>For Students</h3>
+                        <p>Apply for placement drives, track your applications, and land your dream job all in one place.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- footer -->
+    <!-- Footer -->
     <div class="footer">
         <p>&copy; 2026 CareerRoot - Placement Portal. All rights reserved.</p>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
