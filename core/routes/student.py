@@ -1,6 +1,7 @@
 # Student routes blueprint
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask_login import login_required
 from core.database import db, Student, Company, PlacementDrive, Application, Placement, ApplicationStatus
 from core.utils.chart_data import get_student_chart_data
 
@@ -14,6 +15,7 @@ def check_student():
 
 
 @student_bp.route('/dashboard')
+@login_required
 def student_dashboard():
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -29,6 +31,7 @@ def student_dashboard():
 
 
 @student_bp.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -58,6 +61,7 @@ def profile():
     return render_template('student_profile.html', student=student)
 
 @student_bp.route('/jobs')
+@login_required
 def jobs():
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -76,6 +80,7 @@ def jobs():
 
 
 @student_bp.route('/jobs/search', methods=['GET', 'POST'])
+@login_required
 def search_jobs():
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -124,6 +129,7 @@ def search_jobs():
 
 
 @student_bp.route('/job/<int:drive_id>')
+@login_required
 def job_details(drive_id):
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -146,6 +152,7 @@ def job_details(drive_id):
 
 
 @student_bp.route('/apply/<int:drive_id>', methods=['POST'])
+@login_required
 def apply_job(drive_id):
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -190,6 +197,7 @@ def apply_job(drive_id):
         return redirect(url_for('student.jobs'))
 
 @student_bp.route('/applications')
+@login_required
 def applications():
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -203,6 +211,7 @@ def applications():
 
 
 @student_bp.route('/application/<int:application_id>')
+@login_required
 def application_details(application_id):
     if not check_student():
         return redirect(url_for('auth.homepage'))
@@ -223,6 +232,7 @@ def application_details(application_id):
                          drive=drive, company=company)
 
 @student_bp.route('/placements')
+@login_required
 def placements():
     if not check_student():
         return redirect(url_for('auth.homepage'))

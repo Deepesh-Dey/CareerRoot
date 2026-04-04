@@ -1,6 +1,7 @@
 #CareerRoot database models
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from datetime import datetime
 from enum import Enum
 
@@ -27,7 +28,7 @@ class ApplicationStatus(Enum):
     REJECTED = "Rejected"
 
 # Admin model
-class Admin(db.Model):
+class Admin(UserMixin, db.Model):
     __tablename__ = 'admin'
     
     admin_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -40,12 +41,16 @@ class Admin(db.Model):
         from werkzeug.security import check_password_hash
         return check_password_hash(self.password, password)
     
+    # Return ID as string for Flask-Login
+    def get_id(self):
+        return str(self.admin_id)
+    
     def __repr__(self):
         return f'<Admin {self.username}>'
 
 
 #Company
-class Company(db.Model):
+class Company(UserMixin, db.Model):
 #Company model for recruitment organization  (create drives, view applications, and be managed by admin)
     __tablename__ = 'company'
     
@@ -72,12 +77,16 @@ class Company(db.Model):
         from werkzeug.security import check_password_hash
         return check_password_hash(self.password, password)
     
+    # Return ID as string for Flask-Login
+    def get_id(self):
+        return str(self.company_id)
+    
     def __repr__(self):
         return f'<Company {self.company_name}>'
 
 
 #students 
-class Student(db.Model):
+class Student(UserMixin, db.Model):
     #Student model for job seekers (register, apply for drives, and track placement history)
     __tablename__ = 'student'
     
@@ -101,6 +110,10 @@ class Student(db.Model):
         #check if password is correct
         from werkzeug.security import check_password_hash
         return check_password_hash(self.password, password)
+    
+    # Return ID as string for Flask-Login
+    def get_id(self):
+        return str(self.student_id)
     
     def __repr__(self):
         return f'<Student {self.name}>'

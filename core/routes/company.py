@@ -1,6 +1,7 @@
 # Company routes
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask_login import login_required
 from datetime import datetime
 from core.database import db, Company, Student, PlacementDrive, Application, ApplicationStatus
 from core.utils.chart_data import get_company_chart_data
@@ -15,6 +16,7 @@ def check_company():
     return True
 
 @company_bp.route('/dashboard')
+@login_required
 def company_dashboard():
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -33,6 +35,7 @@ def company_dashboard():
                          chart_url=chart_url)
 
 @company_bp.route('/post-job', methods=['GET', 'POST'])
+@login_required
 def post_job():
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -121,6 +124,7 @@ def post_job():
 
 
 @company_bp.route('/jobs')
+@login_required
 def jobs():
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -134,6 +138,7 @@ def jobs():
 
 
 @company_bp.route('/job/<int:drive_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_job(drive_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -161,6 +166,7 @@ def edit_job(drive_id):
 
 
 @company_bp.route('/applications')
+@login_required
 def applications():
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -176,6 +182,7 @@ def applications():
 
 
 @company_bp.route('/application/<int:application_id>/shortlist', methods=['POST'])
+@login_required
 def shortlist_application(application_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -200,6 +207,7 @@ def shortlist_application(application_id):
 
 
 @company_bp.route('/application/<int:application_id>/interview', methods=['POST'])
+@login_required
 def interview_application(application_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -227,6 +235,7 @@ def interview_application(application_id):
 
 
 @company_bp.route('/application/<int:application_id>/select', methods=['POST'])
+@login_required
 def select_application(application_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -251,6 +260,7 @@ def select_application(application_id):
 
 
 @company_bp.route('/application/<int:application_id>/reject', methods=['POST'])
+@login_required
 def reject_application(application_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -275,6 +285,7 @@ def reject_application(application_id):
 
 
 @company_bp.route('/shortlisted')
+@login_required
 def shortlisted():
     if not check_company():
         return redirect(url_for('auth.homepage'))
@@ -293,6 +304,7 @@ def shortlisted():
 
 
 @company_bp.route('/student/<int:student_id>')
+@login_required
 def view_student(student_id):
     if not check_company():
         return redirect(url_for('auth.homepage'))

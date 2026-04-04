@@ -1,6 +1,7 @@
 #CareerRoot - Placement Portal Application
 import os
 from flask import Flask
+from flask_login import LoginManager
 from core.database import db
 from core.routes import register_routes
 from core import hash_password
@@ -20,6 +21,29 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 86400
 app.config['SESSION_COOKIE_SECURE'] = False
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+
+# Load user function for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    from core.database.models import Admin, Company, Student
+    # Try to find user in Admin table
+    admin = Admin.query.get(int(user_id))
+    if admin:
+        return admin
+    # Try to find user in Company table
+    company = Company.query.get(int(user_id))
+    if company:
+        return company
+    # Try to find user in Student table
+    student = Student.query.get(int(user_id))
+    if student:
+        return student
+    return None
 
 db.init_app(app)
 register_routes(app)

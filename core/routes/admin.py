@@ -1,6 +1,7 @@
 # Admin routes
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask_login import login_required, current_user
 from core.database import db, Admin, Company, Student, PlacementDrive, Application
 from core.utils.chart_data import get_admin_chart_data
 
@@ -13,6 +14,7 @@ def check_admin():
     return True
 
 @admin_bp.route('/dashboard')
+@login_required
 def admin_dashboard():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -33,6 +35,7 @@ def admin_dashboard():
                          chart_url=chart_url)
 
 @admin_bp.route('/companies/pending')
+@login_required
 def approve_companies():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -41,6 +44,7 @@ def approve_companies():
     return render_template('admin_approve_companies.html', companies=pending_companies)
 
 @admin_bp.route('/company/approve/<int:company_id>', methods=['POST'])
+@login_required
 def approve_company(company_id):
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -57,6 +61,7 @@ def approve_company(company_id):
     return redirect(url_for('admin.approve_companies'))
 
 @admin_bp.route('/company/reject/<int:company_id>', methods=['POST'])
+@login_required
 def reject_company(company_id):
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -73,6 +78,7 @@ def reject_company(company_id):
     return redirect(url_for('admin.approve_companies'))
 
 @admin_bp.route('/drives/pending')
+@login_required
 def approve_drives():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -82,6 +88,7 @@ def approve_drives():
 
 
 @admin_bp.route('/drive/approve/<int:drive_id>', methods=['POST'])
+@login_required
 def approve_drive(drive_id):
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -99,6 +106,7 @@ def approve_drive(drive_id):
 
 
 @admin_bp.route('/drive/reject/<int:drive_id>', methods=['POST'])
+@login_required
 def reject_drive(drive_id):
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -115,6 +123,7 @@ def reject_drive(drive_id):
     return redirect(url_for('admin.approve_drives'))
 
 @admin_bp.route('/students')
+@login_required
 def view_students():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -123,6 +132,7 @@ def view_students():
     return render_template('admin_view_students.html', students=all_students)
 
 @admin_bp.route('/companies')
+@login_required
 def view_companies():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -131,6 +141,7 @@ def view_companies():
     return render_template('admin_view_companies.html', companies=all_companies)
 
 @admin_bp.route('/drives')
+@login_required
 def view_drives():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -139,6 +150,7 @@ def view_drives():
     return render_template('admin_view_drives.html', drives=all_drives)
 
 @admin_bp.route('/applications')
+@login_required
 def view_applications():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -147,6 +159,7 @@ def view_applications():
     return render_template('admin_view_applications.html', applications=all_applications)
 
 @admin_bp.route('/student/<int:student_id>')
+@login_required
 def view_student(student_id):
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -160,6 +173,7 @@ def view_student(student_id):
     return render_template('admin_student_profile.html', student=student, applications=applications)
 
 @admin_bp.route('/search', methods=['GET', 'POST'])
+@login_required
 def search():
     if not check_admin():
         return redirect(url_for('auth.homepage'))
@@ -192,6 +206,7 @@ def search():
 
 
 @admin_bp.route('/blacklist')
+@login_required
 def blacklist():
     if not check_admin():
         return redirect(url_for('auth.homepage'))

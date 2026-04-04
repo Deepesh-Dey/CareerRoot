@@ -1,6 +1,7 @@
 # Authentication routes
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask_login import login_user, logout_user, current_user
 from core.database import db, Admin, Company, Student
 from core import hash_password, validate_password_strength
 from core.utils.validators import (
@@ -65,6 +66,8 @@ def login():
                 return render_template('admin_login_page.html')
             admin = Admin.query.filter_by(username=username).first()
             if admin and admin.verify_password(password):
+                # Use Flask-Login to log in user
+                login_user(admin)
                 session['user_id'] = admin.admin_id
                 session['user_type'] = 'admin'
                 session['username'] = admin.username
@@ -89,6 +92,8 @@ def login():
                     flash('Your account has been blacklisted', 'danger')
                     return render_template('student_login_page.html')
                 if student.verify_password(password):
+                    # Use Flask-Login to log in user
+                    login_user(student)
                     session['user_id'] = student.student_id
                     session['user_type'] = 'student'
                     session['username'] = student.name
@@ -119,6 +124,8 @@ def login():
                     flash(f'Your registration is {company.approval_status}. Please wait for admin approval.', 'warning')
                     return render_template('company_login_page.html')
                 if company.verify_password(password):
+                    # Use Flask-Login to log in user
+                    login_user(company)
                     session['user_id'] = company.company_id
                     session['user_type'] = 'company'
                     session['username'] = company.company_name
@@ -323,5 +330,7 @@ def logout():
     if 'user_id' in session:
         username = session.get('username')
         session.clear()
-        flash('Logged out successfully', 'success')
+    # Use Flask-Login to log out user
+    logout_user()
+    flash('Logged out successfully', 'success')
     return redirect(url_for('auth.homepage'))
