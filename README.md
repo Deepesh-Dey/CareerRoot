@@ -117,27 +117,33 @@ The app will be available at `http://localhost:5000`
 
 ### 🏠 Landing Page
 The welcoming home page with navigation to all three portals.
-![Landing Page](./static/images/landing_page.png)
+<img width="1919" height="821" alt="image" src="https://github.com/user-attachments/assets/1e00729d-f644-4085-8021-ff5b040475fe" />
+
 
 ### 👨‍💼 Admin Dashboard
 Admin panel with complete statistics, analytics charts, and management controls.
-![Admin Dashboard](./static/images/admin_dashboard.png)
+<img width="1919" height="950" alt="image" src="https://github.com/user-attachments/assets/66966f97-37cd-4096-bdb1-c1b134b7fdc3" />
+
 
 ### 🏢 Company Registration
 Company registration form for new recruitment partners.
-![Company Registration](./static/images/company_registration.png)
+<img width="1919" height="788" alt="image" src="https://github.com/user-attachments/assets/14231148-8a85-49fd-bf54-f0acc6a19463" />
+
 
 ### 🏢 Company Dashboard
 Company dashboard showing jobs posted, applications, and analytics.
-![Company Dashboard](./static/images/company_dashboard.png)
+<img width="1919" height="900" alt="image" src="https://github.com/user-attachments/assets/47823781-86df-4554-a183-245a5a81bdc7" />
+
 
 ### 🎓 Student Registration
 Student registration form for placement candidates.
-![Student Registration](./static/images/student_registration.png)
+<img width="1919" height="840" alt="image" src="https://github.com/user-attachments/assets/340187de-ff1a-447a-9fdb-fd806fe509f9" />
+
 
 ### 🎓 Student Dashboard
 Student dashboard with profile, available drives, and application tracking.
-![Student Dashboard](./static/images/student_dashboard.png)
+<img width="1919" height="885" alt="image" src="https://github.com/user-attachments/assets/051b645b-bb34-4342-8ad1-ed61a1a03838" />
+
 
 ---
 
