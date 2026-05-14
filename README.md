@@ -83,15 +83,27 @@ The app will be available at `http://localhost:5000`
 
 ## 🔐 Getting Started
 
-### Admin Login
-Use the default admin credentials to access the admin dashboard:
+### Default Login Credentials
 
+#### Admin Portal
 | Field | Value |
 |-------|-------|
 | **Username** | `admin` |
 | **Password** | `Admin@123` |
 
-### Register as Student or Company
+#### Student Portal
+| Field | Value |
+|-------|-------|
+| **Username** | `lamMessi@football.com` |
+| **Password** | `iammessi@2412` |
+
+#### Company Portal
+| Field | Value |
+|-------|-------|
+| **Username** | `XYZ_firstCompany@gmail.com` |
+| **Password** | `Hrnumber1@1234` |
+
+### Register New Accounts
 - Navigate to the respective login page
 - Click on **"Register"** or **"Sign Up"**
 - Fill in the registration form with your details
